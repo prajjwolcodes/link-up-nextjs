@@ -26,6 +26,7 @@
     "@tiptap/starter-kit": "^2.11.3",
     "@uploadthing/react": "^7.1.5",
     "arctic": "^3.2.1",
+    "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
