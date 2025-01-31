@@ -20,12 +20,15 @@ import Link from "next/link";
 import { useState } from "react";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react"; // Icons for visibility toggle
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 
 const SignUpform = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [showPassword, setShowPassword] = useState(false);
 
+    const router = useRouter()
     const form = useForm({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
@@ -36,14 +39,24 @@ const SignUpform = () => {
     })
 
     async function onSubmit(data: z.infer<typeof signUpSchema>) {
-        console.log(data);
+        setIsLoading(true)
 
         try {
             const res = await axios.post("/api/signup", data)
-            // toast.success(res.data.message)
+            console.log(res.data);
+            toast.success(res.data.message)
+            router.replace("/signin")
 
         } catch (error) {
-            console.log("Error in signing up", error)
+            // Handle error response (status code 400 or 500)
+            if (axios.isAxiosError(error) && error.response) {
+                toast.error(error.response.data.message);
+            } else {
+                console.log("Error during signup:", error);
+                toast.error("An unexpected error occurred. Please try again.");
+            }
+        } finally {
+            setIsLoading(false)
         }
     }
     return (

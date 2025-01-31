@@ -18,9 +18,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { Eye, EyeOff } from "lucide-react"; // Icons for visibility toggle
+import { toast } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 const SignInForm = () => {
     const [isLoading, setIsLoading] = useState(false)
+    const router = useRouter()
     const [showPassword, setShowPassword] = useState(false);
 
     const form = useForm({
@@ -40,8 +43,16 @@ const SignInForm = () => {
                 password: data.password,
                 redirect: false
             })
+
             console.log(res)
-            // toast.success(res.data.message)
+            if (res?.error) {
+                toast.error(res?.error)
+                return
+            }
+            if (res?.ok) {
+                toast.success("Successfully signed in")
+                router.replace("/")
+            }
 
         } catch (error) {
             console.log("Error in signing up", error)

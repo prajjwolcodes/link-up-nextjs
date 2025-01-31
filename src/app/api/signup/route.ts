@@ -20,6 +20,7 @@ export async function POST(req: NextRequest,) {
 
         const { email, password, username } = parsedBody.data;
         const existingUserByUsername = await db.user.findUnique({ where: { username } });
+
         if (existingUserByUsername) {
             return Response.json({ user: null, message: "User already exists with that username" }, { status: 400 });
         }
