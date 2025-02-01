@@ -8,7 +8,6 @@ export default async function RootLayout({
 }>) {
 
     const { user } = await validateRequest()
-    console.log(user);
 
     if (user) redirect("/")
     return (
