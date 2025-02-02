@@ -24,6 +24,17 @@ model User {
   bio         String?
   avatarUrl   String?
   createdAt   DateTime @default(now())
+  posts       Post[]
 
   @@map("users")
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@map("posts")
 }
