@@ -20,7 +20,7 @@ export default async function RootLayout({
         <AuthProvider>
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
                 <Navbar />
-                <div className="mt-16 h-screen max-w-7xl mx-auto border border-red-500">
+                <div className="mt-16 max-w-7xl mx-auto border border-red-500">
                     <MenuBar />
                     {children}
                 </div>

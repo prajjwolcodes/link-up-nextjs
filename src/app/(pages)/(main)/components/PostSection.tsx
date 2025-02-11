@@ -14,6 +14,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';
 import avatarPng from "../../../../../public/images/avatar.png";
 import axios from 'axios';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+
 import toast from 'react-hot-toast';
 
 const PostSection = () => {
@@ -21,8 +23,6 @@ const PostSection = () => {
     const { data: session } = useSession();
     const user = session?.user;
 
-    const [content, setContent] = useState('');
-    const [error, setError] = useState('');
     const MAX_LENGTH = 500;
 
     const form = useForm({
@@ -54,18 +54,24 @@ const PostSection = () => {
     };
 
     return (
-        <Card className="max-w-2xl mx-auto p-4 space-y-4">
+        <Card className="p-4">
             <div className="flex gap-3">
                 {/* User Avatar */}
                 <div className="flex-shrink-0">
                     <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-                        <Image
+                        {/* <Image
                             src={user?.avatarUrl ?? avatarPng}
                             alt="User avatar"
                             className="w-full h-full object-cover"
                             width={40}
                             height={40}
-                        />
+                        /> */}
+                        <Avatar className="h-10 w-10 ring-2 ring-primary/10 hover:ring-primary/30 transition-all">
+                            <AvatarImage src={user?.avatarUrl || undefined} alt={user?.username} className='w-full h-full object-cover' />
+                            <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-500 text-white">
+                                {(user?.username?.[0] || '').toUpperCase()}
+                            </AvatarFallback>
+                        </Avatar>
                     </div>
                 </div>
 
