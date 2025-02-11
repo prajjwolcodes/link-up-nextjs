@@ -14,7 +14,7 @@ const AvatarButton = ({ avatarUrl, size }: AvatarButtonProps) => {
             style={{ width: `${size}px`, height: `${size}px`, minWidth: `${size}px`, minHeight: `${size}px` }}>
             <div className="relative w-full h-full">
                 <Image
-                    src={avatarUrl || avatar}
+                    src={avatarUrl ? avatarUrl : avatar}
                     alt="avatar"
                     className="object-cover"
                     fill
