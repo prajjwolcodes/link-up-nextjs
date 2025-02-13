@@ -13,7 +13,7 @@ const MenuBar = () => {
     return (
         <>
             <div className="">
-                <nav className="w-60 fixed top-16 left-32 text-black dark:text-gray-100">
+                <nav className="w-60 fixed top-20 text-black dark:text-gray-100">
                     {menuItems.map((item) => (
                         <Button
                             key={item.label}
