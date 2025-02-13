@@ -70,14 +70,7 @@ const Posts = async () => {
                                 </div>
                             )}
 
-                            {/* Engagement Stats */}
-                            {/* <div className="flex items-center justify-between pt-4 text-sm text-muted-foreground">
-                            <span>{post.likes || 0} likes</span>
-                            <span>{post.comments || 0} comments</span>
-                            <span>{post.shares || 0} shares</span>
-                        </div> */}
                         </CardContent>
-
                         <Separator />
 
                         {/* Action Buttons */}

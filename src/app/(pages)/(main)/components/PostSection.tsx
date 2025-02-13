@@ -43,6 +43,7 @@ const PostSection = () => {
                 }
             })
             toast.success("Post created successfully");
+            form.reset();
 
         } catch (error) {
             if (error instanceof Error) {
