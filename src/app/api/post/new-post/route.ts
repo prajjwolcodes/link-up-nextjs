@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { validateRequest } from "../auth/[...nextauth]/options";
+import { validateRequest } from "../../auth/[...nextauth]/options";
 import { db } from "@/lib/prisma";
 import { postSchema } from "@/schema/postSchema";
 

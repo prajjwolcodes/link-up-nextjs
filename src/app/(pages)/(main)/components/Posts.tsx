@@ -3,25 +3,25 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { db } from '@/lib/prisma'
 import Image from 'next/image';
 import RelativeTime from '@/lib/getRelativeDate';
 
-const Posts = async () => {
-    const posts = await db.post.findMany({
-        orderBy: {
-            createdAt: 'desc'
-        },
-        include: {
-            user: {
-                select: {
-                    username: true,
-                    displayName: true,
-                    avatarUrl: true
-                }
-            }
-        }
-    })
+interface PostProps {
+    posts: {
+        id: string;
+        content: string;
+        createdAt: Date;
+        user: {
+            id: string;
+            username: string;
+            displayName: string;
+            avatarUrl: string;
+        };
+    }[];
+}
+
+const Posts = ({ posts }: PostProps) => {
+
     return (
         <div className="w-[1/3] space-y-6 mt-4">
             {
@@ -45,7 +45,7 @@ const Posts = async () => {
                                         {post.user.displayName}
                                     </span>
                                     <span className="text-sm text-muted-foreground">@{post.user.username}</span>
-                                    <span className="text-xs text-muted-foreground"><RelativeTime createdAt={post.createdAt.toISOString()} /></span>
+                                    <span className="text-xs text-muted-foreground"><RelativeTime createdAt={post.createdAt} /></span>
                                 </div>
                             </div>
 

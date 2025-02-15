@@ -37,7 +37,7 @@ const PostSection = () => {
     async function onSubmit(data: z.infer<typeof postSchema>) {
         setLoading(true);
         try {
-            const res = await axios.post('/api/post', data, {
+            const res = await axios.post('/api/post/new-post', data, {
                 headers: {
                     'Content-Type': 'application/json'
                 }

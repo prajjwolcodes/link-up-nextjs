@@ -13,11 +13,18 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useQueryClient } from '@tanstack/react-query';
 
 
 const ProfileButton = () => {
     const { data: session } = useSession()
     const user = session?.user
+    const queryClient = useQueryClient();
+
+    function handleLogout() {
+        signOut()
+        queryClient.clear()
+    }
     return (
         <div>
             <DropdownMenu>
@@ -39,7 +46,7 @@ const ProfileButton = () => {
 
 
                     <DropdownMenuItem
-                        onClick={() => signOut()}
+                        onClick={handleLogout}
                         className="text-red-600 cursor-pointer text-base hover:text-red-700 hover:bg-red-50"
                     >
                         Logout
