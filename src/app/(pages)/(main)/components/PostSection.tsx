@@ -6,22 +6,21 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Send } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { postSchema } from '@/schema/postSchema';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';
-import avatarPng from "../../../../../public/images/avatar.png";
 import axios from 'axios';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-
 import toast from 'react-hot-toast';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const PostSection = () => {
     const [loading, setLoading] = useState(false);
     const { data: session } = useSession();
     const user = session?.user;
+    const queryClient = useQueryClient();
 
     const MAX_LENGTH = 500;
 
@@ -34,39 +33,41 @@ const PostSection = () => {
 
     const watchContent = form.watch("content");
 
-    async function onSubmit(data: z.infer<typeof postSchema>) {
-        setLoading(true);
-        try {
-            const res = await axios.post('/api/post/new-post', data, {
+    const mutation = useMutation({
+        mutationFn: (newPost: { content: string }) => {
+            return axios.post('/api/post/new-post', newPost, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            })
+            });
+        },
+        onSuccess: () => {
             toast.success("Post created successfully");
             form.reset();
-
-        } catch (error) {
+            // Invalidate the query to refetch the posts
+            queryClient.invalidateQueries({ queryKey: ["post-feed", "for-you"] });
+        },
+        onError: (error) => {
             if (error instanceof Error) {
-                console.log("Error: ", error.stack)
+                console.log("Error: ", error.stack);
             }
-        } finally {
+        },
+        onSettled: () => {
             setLoading(false);
         }
+    });
+
+    async function onSubmit(data: z.infer<typeof postSchema>) {
+        setLoading(true);
+        mutation.mutate(data);
     };
 
     return (
-        <Card className="p-4">
+        <Card className="p-4 mb-4 w-full">
             <div className="flex gap-3">
                 {/* User Avatar */}
-                <div className="flex-shrink-0">
+                <div className="">
                     <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-                        {/* <Image
-                            src={user?.avatarUrl ?? avatarPng}
-                            alt="User avatar"
-                            className="w-full h-full object-cover"
-                            width={40}
-                            height={40}
-                        /> */}
                         <Avatar className="h-10 w-10 ring-2 ring-primary/10 hover:ring-primary/30 transition-all">
                             <AvatarImage src={user?.avatarUrl || undefined} alt={user?.username} className='w-full h-full object-cover' />
                             <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-500 text-white">
@@ -78,7 +79,7 @@ const PostSection = () => {
 
                 {/* Post Form */}
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="flex-grow space-y-4">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
                         <FormField
                             control={form.control}
                             name="content"
