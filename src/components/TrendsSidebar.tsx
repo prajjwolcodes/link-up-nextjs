@@ -21,7 +21,7 @@ const TrendsSidebar = async () => {
     })
 
     return (
-        <aside className="w-full rounded-lg">
+        <aside className="w-[90%] rounded-lg">
             <div className="flex flex-col gap-2 mb-4">
                 <div>
                     <div className="flex items-center gap-2 mb-4">

@@ -5,6 +5,7 @@ import axios from "axios";
 import Posts from "./components/Posts";
 import { Loader2 } from "lucide-react";
 import { useEffect, useRef } from "react";
+import PostSkeleton from "./components/PostSkeleton";
 
 
 // SIMPLE REACT QUERY EXAMPLE
@@ -64,7 +65,7 @@ export default function ForyouFeed() {
 
     const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-    if (isLoading) return <p><Loader2 className="animate-spin flex items-center" /></p>;
+    if (isLoading) return <PostSkeleton />;
     if (isError) return <p>Something went wrong</p>;
 
 

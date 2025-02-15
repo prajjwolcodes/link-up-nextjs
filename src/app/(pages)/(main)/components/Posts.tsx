@@ -23,7 +23,7 @@ interface PostProps {
 const Posts = ({ posts }: PostProps) => {
 
     return (
-        <div className="w-[1/3] space-y-6 mt-4">
+        <div className="space-y-6">
             {
                 posts.map((post) => (
                     <Card key={post.id} className="w-full hover:shadow-lg transition-shadow duration-300">
