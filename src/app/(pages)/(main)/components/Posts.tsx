@@ -1,3 +1,4 @@
+
 import { Heart, MessageCircle, Share2, MoreHorizontal, Bookmark, Pencil, Trash, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
@@ -27,17 +28,22 @@ interface PostProps {
         content: string;
         createdAt: Date;
         user: {
-            id: string;
             username: string;
             displayName: string;
             avatarUrl: string;
         };
+        userId: string;
     }[];
+    user: {
+        id: string;
+        username: string;
+        displayName: string;
+        avatarUrl: string;
+    };
 }
 
-const Posts = ({ posts }: PostProps) => {
+const Posts = ({ posts, user }: PostProps) => {
     const queryClient = useQueryClient();
-
 
     const mutation = useMutation({
         mutationFn: async (id: string) => {
@@ -52,6 +58,8 @@ const Posts = ({ posts }: PostProps) => {
                 console.log("Error: ", error.stack);
             }
         },
+        onSettled: () => {
+        }
     });
 
     async function handlePostDelete(id: string) {
@@ -90,7 +98,7 @@ const Posts = ({ posts }: PostProps) => {
                                 </div>
                             </div>
 
-                            <DropdownMenu>
+                            {user.id === post.userId && (<DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" size="icon" className="ml-auto rounded-full hover:bg-secondary/80">
                                         <MoreHorizontal className="h-5 w-5" />
@@ -124,7 +132,9 @@ const Posts = ({ posts }: PostProps) => {
                                         </AlertDialogContent>
                                     </AlertDialog>
                                 </DropdownMenuContent>
-                            </DropdownMenu>
+                            </DropdownMenu>)}
+
+
                         </CardHeader>
 
                         {/* Post Content */}

@@ -6,6 +6,7 @@ import Posts from "./components/Posts";
 import { Loader2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import PostSkeleton from "./components/PostSkeleton";
+import { useSession } from "next-auth/react";
 
 
 // SIMPLE REACT QUERY EXAMPLE
@@ -38,6 +39,10 @@ const fetchPosts = async ({ pageParam = 1 }) => {
 };
 
 export default function ForyouFeed() {
+
+    const { data: session } = useSession();
+    const user = session?.user;
+    console.log(user, "sadasds");
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } = useInfiniteQuery({
         queryKey: ["post-feed", "for-you"],
         queryFn: fetchPosts,
@@ -73,7 +78,7 @@ export default function ForyouFeed() {
     return (
         <div>
             {data?.pages.map((page, index) =>
-                <Posts key={index} posts={page.data.posts} />
+                <Posts key={index} posts={page.data.posts} user={user as { id: string; username: string; displayName: string; avatarUrl: string }} />
             )}
 
             {/* button to load more  */}
