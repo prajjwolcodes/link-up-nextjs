@@ -1,10 +1,25 @@
-import { Heart, MessageCircle, Share2, MoreHorizontal, Bookmark, Image as ImageIcon } from 'lucide-react';
+import { Heart, MessageCircle, Share2, MoreHorizontal, Bookmark, Pencil, Trash, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
 import RelativeTime from '@/lib/getRelativeDate';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface PostProps {
     posts: {
@@ -21,6 +36,32 @@ interface PostProps {
 }
 
 const Posts = ({ posts }: PostProps) => {
+    const queryClient = useQueryClient();
+
+
+    const mutation = useMutation({
+        mutationFn: async (id: string) => {
+            return await axios.delete(`/api/post/delete/${id}`)
+        },
+        onSuccess: () => {
+            toast.success("Post Deleted successfully");
+            queryClient.invalidateQueries({ queryKey: ["post-feed", "for-you"] });
+        },
+        onError: (error) => {
+            if (error instanceof Error) {
+                console.log("Error: ", error.stack);
+            }
+        },
+    });
+
+    async function handlePostDelete(id: string) {
+        try {
+            mutation.mutate(id);
+        } catch (error) {
+            console.error(error, "Error deleting post");
+
+        }
+    }
 
     return (
         <div className="space-y-6 w-full">
@@ -49,9 +90,41 @@ const Posts = ({ posts }: PostProps) => {
                                 </div>
                             </div>
 
-                            <Button variant="ghost" size="icon" className="ml-auto rounded-full hover:bg-secondary/80">
-                                <MoreHorizontal className="h-5 w-5" />
-                            </Button>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="ml-auto rounded-full hover:bg-secondary/80">
+                                        <MoreHorizontal className="h-5 w-5" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem className="flex cursor-pointer items-center gap-2">
+                                        <Pencil className="h-4 w-4" />
+                                        Edit
+                                    </DropdownMenuItem>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <DropdownMenuItem className="flex cursor-pointer items-center gap-2 text-red-600" onSelect={(e) => e.preventDefault()}>
+                                                <Trash className="h-4 w-4" />
+                                                Delete
+                                            </DropdownMenuItem>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This action cannot be undone. This will permanently delete the item.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => handlePostDelete(post.id)} className="bg-red-600 hover:bg-red-700">
+                                                    Delete
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </CardHeader>
 
                         {/* Post Content */}

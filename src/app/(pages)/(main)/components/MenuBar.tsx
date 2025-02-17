@@ -12,20 +12,22 @@ const MenuBar = () => {
 
     return (
         <>
-            <nav className="w-[25%] text-black dark:text-gray-100">
-                {menuItems.map((item) => (
-                    <Button
-                        key={item.label}
-                        variant="ghost"
-                        className="w-full justify-start gap-6 px-6 py-6 text-lg hover:bg-gray-100"
-                        asChild
-                    >
-                        <a href={item.href}>
-                            <item.icon className="w-6 h-6" />
-                            <span className="font-medium">{item.label}</span>
-                        </a>
-                    </Button>
-                ))}
+            <nav className="w-[25%] relative text-black dark:text-gray-100">
+                <div className=''>
+                    {menuItems.map((item) => (
+                        <Button
+                            key={item.label}
+                            variant="ghost"
+                            className="w-full justify-start gap-6 px-6 py-6 text-lg hover:bg-gray-100"
+                            asChild
+                        >
+                            <a href={item.href}>
+                                <item.icon className="w-6 h-6" />
+                                <span className="font-medium">{item.label}</span>
+                            </a>
+                        </Button>
+                    ))}
+                </div>
             </nav>
 
             <div className="sticky bottom-0 flex w-full justify-center gap-5 border-t bg-card p-3 sm:hidden">
