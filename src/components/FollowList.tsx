@@ -20,27 +20,19 @@ interface User {
 
 interface FollowListProps {
     users: User[];
-    loggedInUserId: string;
+    loggedInUserId: string; // Pass the logged-in user's ID
 }
 
 const FollowList: React.FC<FollowListProps> = ({ users: initialUsers, loggedInUserId }) => {
     const [localUsers, setLocalUsers] = useState<User[]>(initialUsers);
-    const [animatingIds, setAnimatingIds] = useState<Set<string>>(new Set());
 
+    // Mutation for following a user
     const followMutation = useMutation({
         mutationFn: (id: string) => axios.post(`/api/users/followers/${id}`),
         onSuccess: (_, id) => {
             toast.success("Following");
-            setAnimatingIds(prev => new Set(prev).add(id));
 
-            setTimeout(() => {
-                setAnimatingIds(prev => {
-                    const newSet = new Set(prev);
-                    newSet.delete(id);
-                    return newSet;
-                });
-            }, 500);
-
+            // Update the local state to reflect the follow action
             setLocalUsers(prevUsers =>
                 prevUsers.map(user =>
                     user.id === id
@@ -60,20 +52,13 @@ const FollowList: React.FC<FollowListProps> = ({ users: initialUsers, loggedInUs
         },
     });
 
+    // Mutation for unfollowing a user
     const unfollowMutation = useMutation({
         mutationFn: (id: string) => axios.delete(`/api/users/followers/${id}`),
         onSuccess: (_, id) => {
             toast.success("Unfollowed");
-            setAnimatingIds(prev => new Set(prev).add(id));
 
-            setTimeout(() => {
-                setAnimatingIds(prev => {
-                    const newSet = new Set(prev);
-                    newSet.delete(id);
-                    return newSet;
-                });
-            }, 500);
-
+            // Update the local state to reflect the unfollow action
             setLocalUsers(prevUsers =>
                 prevUsers.map(user =>
                     user.id === id
@@ -112,7 +97,7 @@ const FollowList: React.FC<FollowListProps> = ({ users: initialUsers, loggedInUs
                         <div className="flex items-center gap-3">
                             <Avatar>
                                 <AvatarImage className="w-12 h-12" src={user.avatarUrl || undefined} alt="display picture" />
-                                <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-500 text-white">
+                                <AvatarFallback className='bg-gradient-to-br from-purple-400 to-pink-500 text-white'>
                                     {user.username.charAt(0).toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
@@ -124,25 +109,21 @@ const FollowList: React.FC<FollowListProps> = ({ users: initialUsers, loggedInUs
                             </div>
                         </div>
 
-                        <button
-                            onClick={() =>
-                                user.following?.some(follow => follow.followerId === loggedInUserId)
-                                    ? handleUnfollow(user.id)
-                                    : handleFollow(user.id)
-                            }
-                            className={`
-                                 py-1.5 rounded-full text-sm font-medium
-                                transition-all duration-300 ease-in-out
-                                ${animatingIds.has(user.id) ? 'scale-95' : 'scale-100'}
-                                ${user.following?.some(follow => follow.followerId === loggedInUserId)
-                                    ? 'bg-gray-200 px-4 text-gray-700 hover:bg-gray-300'
-                                    : 'bg-gray-900 px-6 text-white hover:bg-gray-800'}
-                            `}
-                        >
-                            {user.following?.some(follow => follow.followerId === loggedInUserId)
-                                ? "Following"
-                                : "Follow"}
-                        </button>
+                        {user.following?.some(follow => follow.followerId === loggedInUserId) ? (
+                            <button
+                                onClick={() => handleUnfollow(user.id)}
+                                className="px-4 py-1.5 bg-gray-200 text-gray-700 rounded-full text-sm font-medium hover:bg-gray-300 transition-colors"
+                            >
+                                Following
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => handleFollow(user.id)}
+                                className="px-4 py-1.5 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-colors"
+                            >
+                                Follow
+                            </button>
+                        )}
                     </div>
                 ))}
             </div>

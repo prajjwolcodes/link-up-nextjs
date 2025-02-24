@@ -6,10 +6,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     const { user: loggedInUser }: { user: { id: string } } = await validateRequest() as { user: { id: string } };
     const { id } = await params
 
-    console.log(loggedInUser, "sdasdadasdad");
 
-    // if (!loggedInUser)
-    //     return Response.json({ message: "Not logged in" }, { status: 401 });
+    if (!loggedInUser)
+        return Response.json({ message: "Not logged in" }, { status: 401 });
 
     try {
         const user = await db.user.findUnique({
@@ -52,7 +51,6 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
     const { user: loggedInUser }: { user: { id: string } } = await validateRequest() as { user: { id: string } };
 
-    console.log(loggedInUser, "sdasdadasdad");
     const { id } = await params
 
 

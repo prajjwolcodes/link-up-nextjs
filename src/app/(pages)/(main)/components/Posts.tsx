@@ -49,7 +49,6 @@ interface PostProps {
 const Posts = ({ posts, user }: PostProps) => {
     const queryClient = useQueryClient();
 
-    console.log(user);
     const mutation = useMutation({
         mutationFn: async (id: string) => {
             return await axios.delete(`/api/post/delete/${id}`)
