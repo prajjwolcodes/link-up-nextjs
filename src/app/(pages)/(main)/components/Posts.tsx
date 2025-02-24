@@ -39,12 +39,17 @@ interface PostProps {
         username: string;
         displayName: string;
         avatarUrl: string;
+        following: {
+            followerId: string,
+            followingId: string,
+        }[] | null;
     };
 }
 
 const Posts = ({ posts, user }: PostProps) => {
     const queryClient = useQueryClient();
 
+    console.log(user);
     const mutation = useMutation({
         mutationFn: async (id: string) => {
             return await axios.delete(`/api/post/delete/${id}`)
@@ -98,7 +103,7 @@ const Posts = ({ posts, user }: PostProps) => {
                                 </div>
                             </div>
 
-                            {user.id === post.userId && (<DropdownMenu>
+                            {user?.id === post.userId && (<DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" size="icon" className="ml-auto rounded-full hover:bg-secondary/80">
                                         <MoreHorizontal className="h-5 w-5" />

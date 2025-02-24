@@ -25,8 +25,22 @@ model User {
   avatarUrl   String?
   createdAt   DateTime @default(now())
   posts       Post[]
+  followers   Follow[] @relation("followers")
+  following   Follow[] @relation("following")
 
   @@map("users")
+}
+
+model Follow {
+  id          String @id @default(cuid())
+  followerId  String
+  followingId String
+
+  followers User     @relation("followers", fields: [followerId], references: [id], onDelete: Cascade)
+  following User     @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([followerId, followingId])
 }
 
 model Post {

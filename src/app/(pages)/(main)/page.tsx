@@ -7,7 +7,7 @@ const page = async () => {
 
   return (
     <div className="w-full max-w-[90rem] flex gap-10 mx-auto p-2 space-y-4">
-      <div className='flex w-full flex-col'>
+      <div className='flex w-full flex-col '>
         <PostSection />
         <ForyouFeed />
       </div>

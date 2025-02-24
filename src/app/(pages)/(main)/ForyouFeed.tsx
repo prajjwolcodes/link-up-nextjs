@@ -42,7 +42,6 @@ export default function ForyouFeed() {
 
     const { data: session } = useSession();
     const user = session?.user;
-    console.log(user, "sadasds");
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError } = useInfiniteQuery({
         queryKey: ["post-feed", "for-you"],
         queryFn: fetchPosts,
@@ -78,7 +77,7 @@ export default function ForyouFeed() {
     return (
         <div>
             {data?.pages.map((page, index) =>
-                <Posts key={index} posts={page.data.posts} user={user as { id: string; username: string; displayName: string; avatarUrl: string }} />
+                <Posts key={index} posts={page.data.posts} user={user as { id: string; username: string; displayName: string; avatarUrl: string; following: [] }} />
             )}
 
             {/* button to load more  */}

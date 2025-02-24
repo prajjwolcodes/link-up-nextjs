@@ -18,9 +18,11 @@ export default async function RootLayout({
         <AuthProvider>
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
                 <Navbar />
-                <div className="relative flex mt-16 max-w-[90rem] mx-auto border border-red-500">
+                <div className="relative mt-16 max-w-[90rem] grid grid-cols-5 gap-4 mx-auto border border-red-500">
                     <MenuBar />
-                    {children}
+                    <div className="col-span-4">
+                        {children}
+                    </div>
                 </div>
             </div>
         </AuthProvider>
