@@ -21,6 +21,7 @@ import RelativeTime from '@/lib/getRelativeDate';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import Link from 'next/link';
 
 interface PostProps {
     posts: {
@@ -84,10 +85,14 @@ const Posts = ({ posts, user }: PostProps) => {
                         <CardHeader className="flex flex-row items-center gap-4 p-6">
                             <div className="relative">
                                 <Avatar className="h-10 w-10 ring-2 ring-primary/10 hover:ring-primary/30 transition-all">
-                                    <AvatarImage src={post.user.avatarUrl || undefined} alt={post.user.username} className='w-full h-full object-cover' />
-                                    <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-500 text-white">
-                                        {post.user.username[0].toUpperCase()}
-                                    </AvatarFallback>
+                                    <Link href={`/user/${post.user.username}`}>
+                                        <AvatarImage src={post.user.avatarUrl || undefined} alt={post.user.username} className='w-full h-full object-cover' />
+                                    </Link>
+                                    <Link href={`/user/${post.user.username}`}>
+                                        <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-500 text-white">
+                                            {post.user.username[0].toUpperCase()}
+                                        </AvatarFallback>
+                                    </Link>
                                 </Avatar>
 
                             </div>
