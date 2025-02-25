@@ -22,6 +22,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 interface PostProps {
     posts: {
@@ -31,24 +32,18 @@ interface PostProps {
         user: {
             username: string;
             displayName: string;
-            avatarUrl: string;
+            avatarUrl: string | null | undefined;
         };
         userId: string;
     }[];
-    user: {
-        id: string;
-        username: string;
-        displayName: string;
-        avatarUrl: string;
-        following: {
-            followerId: string,
-            followingId: string,
-        }[] | null;
-    };
+
 }
 
-const Posts = ({ posts, user }: PostProps) => {
+const UserPosts = ({ posts }: PostProps) => {
     const queryClient = useQueryClient();
+    const { data: session } = useSession()
+    const user = session?.user
+
 
     const mutation = useMutation({
         mutationFn: async (id: string) => {
@@ -206,4 +201,4 @@ const Posts = ({ posts, user }: PostProps) => {
     )
 }
 
-export default Posts
+export default UserPosts
