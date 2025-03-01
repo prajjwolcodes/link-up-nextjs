@@ -1,6 +1,7 @@
 import React from 'react';
 import { Home, Bell, MessageSquare, Bookmark } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import Link from 'next/link';
 
 const MenuBar = () => {
     const menuItems = [
@@ -21,10 +22,10 @@ const MenuBar = () => {
                             className="w-full justify-start gap-6 px-6 py-6 text-lg hover:bg-gray-100"
                             asChild
                         >
-                            <a href={item.href}>
+                            <Link href={item.href}>
                                 <item.icon className="w-6 h-6" />
                                 <span className="font-medium">{item.label}</span>
-                            </a>
+                            </Link>
                         </Button>
                     ))}
                 </div>

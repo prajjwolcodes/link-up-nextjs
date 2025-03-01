@@ -5,7 +5,6 @@ import ForyouFeed from './ForyouFeed'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import FollowingFeed from './FollowingFeed'
 
-
 const page = async () => {
 
   return (

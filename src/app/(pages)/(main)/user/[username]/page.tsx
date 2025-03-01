@@ -2,11 +2,13 @@ import React from 'react'
 import UserProfile from '../../components/UserProfile'
 import TrendsSidebar from '@/components/TrendsSidebar'
 import { db } from '@/lib/prisma'
+import { validateRequest } from '@/app/api/auth/[...nextauth]/options'
 
 const Profile = async ({ params }: { params: { username: string } }) => {
     const { username } = await params
+    const { user: loggedInUser } = await validateRequest() as { user: { id: string } }
 
-    const user = await db.user.findUnique({
+    const clickedUserDetails = await db.user.findUnique({
         where: { username },
         select: {
             id: true,
@@ -15,6 +17,12 @@ const Profile = async ({ params }: { params: { username: string } }) => {
             avatarUrl: true,
             email: true,
             bio: true,
+            followers: {
+                select: {
+                    followerId: true,
+                    followingId: true
+                }
+            },
             posts: {
                 select: {
                     id: true,
@@ -28,7 +36,11 @@ const Profile = async ({ params }: { params: { username: string } }) => {
                         }
                     },
                     userId: true
+                },
+                orderBy: {
+                    createdAt: 'desc'
                 }
+
             },
             _count: {
                 select: {
@@ -40,13 +52,13 @@ const Profile = async ({ params }: { params: { username: string } }) => {
         }
     })
 
-    if (!user) return {}
+    if (!clickedUserDetails) return {}
 
 
     return (
         <div className='grid grid-cols-4 gap-2 p-2 space-y-4'>
             <div className='col-span-3'>
-                <UserProfile user={user} />
+                <UserProfile user={clickedUserDetails} loggedInUser={loggedInUser} />
             </div>
             <div className='col-start-4'>
                 <TrendsSidebar />

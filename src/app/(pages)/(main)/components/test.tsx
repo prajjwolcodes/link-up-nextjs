@@ -14,7 +14,7 @@ const Test = () => {
     });
 
     return (
-        <div>hello</div>
+        <div></div>
     )
 }
 
