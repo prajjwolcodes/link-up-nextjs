@@ -32,7 +32,7 @@ import { useSession } from "next-auth/react";
 // }
 
 const fetchPosts = async ({ pageParam = 1 }) => {
-    const res = await axios.get(`/api/post/following?page=${pageParam}&limit=7`);
+    const res = await axios.get(`/api/post/followingposts?page=${pageParam}&limit=7`);
     console.log(res.data);
     return { data: res.data, nextPage: res.data.nextPage };
 };

@@ -6,82 +6,108 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import UserPosts from './UserPosts';
 import axios from 'axios';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from "react-hot-toast";
 
 interface UserProps {
-    user: {
-        id: string;
-        displayName: string;
-        username: string;
-        email: string | null;
-        avatarUrl: string | null;
-        bio: string | null;
-        posts: {
-            id: string;
-            content: string;
-            createdAt: Date;
-            user: {
-                username: string;
-                displayName: string;
-                avatarUrl: string | undefined | null;
-            };
-            userId: string;
-        }[];
-        followers: {
-            followerId: string;
-            followingId: string;
-        }[];
-        _count: {
-            followers: number,
-            following: number,
-            posts: number
-        };
-    },
+    username: string,
     loggedInUser: {
         id: string;
     }
 }
 
+interface Follower {
+    followerId: string,
 
+}
+export default function UserProfile({ username, loggedInUser }: UserProps) {
 
+    async function fetchClickedUser({ queryKey }: { queryKey: string[] }) {
+        const [, username] = queryKey;
+        const res = await axios.get(`/api/users/${username}`);
+        return res.data;
+    }
 
-export default function UserProfile({ user, loggedInUser }: UserProps) {
-    const { data } = useQuery({
-        queryKey: ["follower-info", user.id],
-        queryFn: () =>
-            axios.get(`/api/users/followers/${user.id}`),
-        staleTime: Infinity,
+    const queryClient = useQueryClient()
+
+    // Fetch userDetails profile dynamically
+    const { data: user, isLoading, error } = useQuery({
+        queryKey: ['userProfile', username],
+        queryFn: fetchClickedUser
     });
 
-    const [isFollowing, setIsFollowing] = useState(user.followers.some(({ followerId }) => followerId === loggedInUser.id));
-    const [followersCount, setFollowersCount] = useState(user._count.followers);
 
-    console.log(data?.data.followData, "data")
 
     // Follow mutation
     const followMutation = useMutation({
-        mutationFn: () => axios.post(`/api/users/followers/${user.id}`),
-        onSuccess: () => {
-            toast.success("Following");
-        },
-        onError: (error) => {
-            console.log(error, "Error in follow");
-            toast.error("Failed to follow");
+        mutationFn: async (id: string) => await axios.post("/api/users/followers", { followingId: id }),
+        onSuccess: (_, id) => {
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+            queryClient.setQueryData(['userProfile', username], (oldData: { clickedUserDetails: { following: Follower[], _count: { following: number } } } | undefined) => {
+                if (!oldData) return oldData;
+                return {
+                    ...oldData,
+                    clickedUserDetails: {
+                        ...oldData.clickedUserDetails,
+                        following: [...oldData.clickedUserDetails.following, { followerId: loggedInUser.id }],
+                        _count: {
+                            ...oldData.clickedUserDetails._count,
+                            following: oldData.clickedUserDetails._count.following + 1 // Increase follower count
+                        }
+                    }
+                };
+            });
+            toast.success("Followed successfully");
         }
     });
 
-    // Unfollow mutation
+    // Mutation for unfollowing a userDetails
     const unfollowMutation = useMutation({
-        mutationFn: () => axios.delete(`/api/users/followers/${user.id}`),
-        onSuccess: () => {
-            toast.success("Unfollowed");
-        },
-        onError: (error) => {
-            console.log(error, "Error in unfollow");
-            toast.error("Failed to unfollow");
+        mutationFn: async (id: string) => await axios.delete("/api/users/followers", { data: { followingId: id } }),
+        onSuccess: (_, id) => {
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+            queryClient.setQueryData(['userProfile', username], (oldData: { clickedUserDetails: { following: Follower[], _count: { following: number } } } | undefined) => {
+                if (!oldData) return oldData;
+                return {
+                    ...oldData,
+                    clickedUserDetails: {
+                        ...oldData.clickedUserDetails,
+                        following: oldData.clickedUserDetails.following.filter((follower: Follower) => follower.followerId !== loggedInUser.id),
+                        _count: {
+                            ...oldData.clickedUserDetails._count,
+                            following: oldData.clickedUserDetails._count.following - 1 // Decrease follower count
+                        }
+                    }
+                };
+            });
+            toast.success("Unfollowed successfully");
         }
     });
+
+    const handleFollow = async (id: string) => {
+        try {
+            followMutation.mutate(id);
+        } catch (error) {
+            toast.error("Something went wrong");
+        }
+    };
+
+    const handleUnfollow = async (id: string) => {
+        try {
+            unfollowMutation.mutate(id);
+        } catch (error) {
+            toast.error("Something went wrong");
+        }
+    };
+
+
+    if (isLoading) return <p>Loading users...</p>;
+    if (error) return <p>Error loading users</p>;
+
+
+    const { clickedUserDetails: userDetails } = user
+    console.log(userDetails);
+    console.log(userDetails.following?.some((follower: Follower) => follower.followerId === loggedInUser.id), "FOLOSDKOS")
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -95,39 +121,37 @@ export default function UserProfile({ user, loggedInUser }: UserProps) {
                         {/* Avatar */}
                         <div className="relative -mt-16 mb-4 md:mb-0">
                             <Avatar className="h-48 w-48 border-4 border-white shadow-md">
-                                <AvatarImage src={user.avatarUrl ?? ""} alt={user.username} />
-                                <AvatarFallback>{user.username.charAt(0).toUpperCase()}</AvatarFallback>
+                                <AvatarImage src={userDetails.avatarUrl ?? ""} alt={userDetails.username} />
+                                <AvatarFallback>{userDetails?.username.charAt(0).toUpperCase()}</AvatarFallback>
                             </Avatar>
                         </div>
 
                         <div className="md:ml-6 flex flex-col md:flex-row w-full justify-between">
                             {/* User Info */}
                             <div>
-                                <h1 className="text-2xl font-bold">{user.displayName}</h1>
-                                <p className="text-gray-500">@{user.username}</p>
-                                <p className="my-2">{user.bio}</p>
+                                <h1 className="text-2xl font-bold">{userDetails.displayName}</h1>
+                                <p className="text-gray-500">@{userDetails.username}</p>
+                                <p className="my-2">{userDetails.bio}</p>
                             </div>
 
                             {/* Follow Button */}
-                            {loggedInUser.id === user.id ? (
+                            {loggedInUser.id === userDetails.id ? (
                                 <div className="mt-4 flex gap-2 md:mt-0">
                                     <Button className="px-10 bg-blue-600 hover:bg-blue-700">Edit</Button>
                                 </div>
                             ) : (
                                 <div className="mt-4 flex gap-2 md:mt-0">
-                                    {data?.data.followData.isFollowedByMe ? (
+                                    {userDetails.following?.some((follower: Follower) => follower.followerId === loggedInUser.id) ? (
                                         <Button
                                             className="bg-gray-600 hover:bg-gray-700"
-                                            onClick={() => unfollowMutation.mutate()}
-                                            disabled={unfollowMutation.isPending}
+                                            onClick={() => handleUnfollow(userDetails.id)}
                                         >
                                             Unfollow
                                         </Button>
                                     ) : (
                                         <Button
                                             className="bg-blue-600 hover:bg-blue-700"
-                                            onClick={() => followMutation.mutate()}
-                                            disabled={followMutation.isPending}
+                                            onClick={() => handleFollow(userDetails.id)}
                                         >
                                             Follow
                                         </Button>
@@ -141,15 +165,15 @@ export default function UserProfile({ user, loggedInUser }: UserProps) {
                     {/* Followers/Following Stats */}
                     <div className="flex gap-4 mt-10">
                         <div className="flex items-center">
-                            <span className="font-bold mr-1">{user._count.posts.toLocaleString()}</span>
+                            <span className="font-bold mr-1">{userDetails._count.posts.toLocaleString()}</span>
                             <span className="text-gray-500">Posts</span>
                         </div>
                         <div className="flex items-center">
-                            <span className="font-bold mr-1">{data?.data.followData.followers}</span>
+                            <span className="font-bold mr-1">{userDetails._count.followers.toLocaleString()}</span>
                             <span className="text-gray-500">Following</span>
                         </div>
                         <div className="flex items-center">
-                            <span className="font-bold mr-1">{user._count.following.toLocaleString()}</span>
+                            <span className="font-bold mr-1">{userDetails._count.following.toLocaleString()}</span>
                             <span className="text-gray-500">Followers</span>
                         </div>
                     </div>
@@ -159,11 +183,11 @@ export default function UserProfile({ user, loggedInUser }: UserProps) {
                 <div className="mt-2 ">
                     <Tabs defaultValue="posts">
                         <TabsList className="w-full">
-                            <TabsTrigger value="posts" className="flex-1 py-1">{user.username} Posts</TabsTrigger>
+                            <TabsTrigger value="posts" className="flex-1 py-1">{userDetails.username} Posts</TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="posts">
-                            <UserPosts posts={user.posts} />
+                            <UserPosts posts={userDetails.posts} />
                         </TabsContent>
                     </Tabs>
                 </div>
