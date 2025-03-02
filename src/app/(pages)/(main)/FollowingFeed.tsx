@@ -33,7 +33,6 @@ import { useSession } from "next-auth/react";
 
 const fetchPosts = async ({ pageParam = 1 }) => {
     const res = await axios.get(`/api/post/followingposts?page=${pageParam}&limit=7`);
-    console.log(res.data);
     return { data: res.data, nextPage: res.data.nextPage };
 };
 
@@ -76,7 +75,7 @@ export default function FollowingFeed() {
     return (
         <div>
             {data?.pages.map((page, index) =>
-                <Posts key={index} posts={page.data.posts} user={user as { id: string; username: string; displayName: string; avatarUrl: string; following: [] }} />
+                <Posts key={index} posts={page.data.posts} userId={user?.id ?? ''} />
             )}
 
             {/* button to load more  */}

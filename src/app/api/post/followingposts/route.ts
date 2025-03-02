@@ -29,9 +29,24 @@ export async function GET(req: NextRequest) {
             include: {
                 user: {
                     select: {
+                        id: true,
                         username: true,
                         displayName: true,
-                        avatarUrl: true
+                        avatarUrl: true,
+                        following: {
+                            select: {
+                                followingId: true,
+                                followerId: true
+                            }
+                        },
+                        followers: {
+                            select: {
+                                followingId: true,
+                                followerId: true
+                            }
+                        },
+
+
                     }
                 }
             },

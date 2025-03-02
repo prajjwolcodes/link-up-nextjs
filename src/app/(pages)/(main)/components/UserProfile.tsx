@@ -106,8 +106,6 @@ export default function UserProfile({ username, loggedInUser }: UserProps) {
 
 
     const { clickedUserDetails: userDetails } = user
-    console.log(userDetails);
-    console.log(userDetails.following?.some((follower: Follower) => follower.followerId === loggedInUser.id), "FOLOSDKOS")
 
     return (
         <div className="min-h-screen bg-gray-50">

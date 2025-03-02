@@ -1,5 +1,5 @@
 
-import { Heart, MessageCircle, Share2, MoreHorizontal, Bookmark, Pencil, Trash, Image as ImageIcon } from 'lucide-react';
+import { Heart, MessageCircle, Share2, MoreHorizontal, Bookmark, Pencil, Trash, Image as ImageIcon, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -22,6 +22,8 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
+import Linkify from '@/context/Linkify';
+import UserToolTip from '@/components/UserToolTip';
 
 interface PostProps {
     posts: {
@@ -29,26 +31,23 @@ interface PostProps {
         content: string;
         createdAt: Date;
         user: {
+            id: string;
             username: string;
             displayName: string;
             avatarUrl: string;
-        };
-        userId: string;
-    }[];
-    user: {
-        id: string;
-        username: string;
-        displayName: string;
-        avatarUrl: string;
-        following: {
-            followerId: string,
-            followingId: string,
-        }[] | null;
-    };
+            followers: {
+                followerId: string,
+                followingId: string,
+            }[] | null;
+        },
+        userId: string
+    }[],
+    userId: string
 }
 
-const Posts = ({ posts, user }: PostProps) => {
+const Posts = ({ posts, userId }: PostProps) => {
     const queryClient = useQueryClient();
+
 
     const mutation = useMutation({
         mutationFn: async (id: string) => {
@@ -85,13 +84,14 @@ const Posts = ({ posts, user }: PostProps) => {
                         <CardHeader className="flex flex-row items-center gap-4 p-6">
                             <div className="relative">
                                 <Link href={`/user/${post.user.username}`}>
-
-                                    <Avatar className="h-10 w-10 ring-2 ring-primary/10 hover:ring-primary/30 transition-all">
-                                        <AvatarImage src={post.user.avatarUrl || undefined} alt={post.user.username} className='w-full h-full object-cover' />
-                                        <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-500 text-white">
-                                            {post.user.username[0].toUpperCase()}
-                                        </AvatarFallback>
-                                    </Avatar>
+                                    <UserToolTip user={post.user} loggedInUserId={userId}>
+                                        <Avatar className="h-10 w-10 ring-2 ring-primary/10 hover:ring-primary/30 transition-all">
+                                            <AvatarImage src={post.user.avatarUrl || undefined} alt={post.user.username} className='w-full h-full object-cover' />
+                                            <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-500 text-white">
+                                                {post.user.username[0].toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </UserToolTip>
                                 </Link>
 
 
@@ -99,18 +99,23 @@ const Posts = ({ posts, user }: PostProps) => {
 
                             <div className="flex flex-col">
                                 <div className="flex items-center gap-2">
-                                    <Link href={`/user/${post.user.username}`}>
-                                        <span className="font-semibold hover:text-primary cursor-pointer">
-                                            {post.user.displayName}
-                                        </span>
-                                    </Link>
+                                    <UserToolTip user={post.user} loggedInUserId={userId}>
+
+                                        <Link href={`/user/${post.user.username}`}>
+
+                                            <span className="font-semibold hover:text-primary cursor-pointer">
+                                                {post.user.displayName}
+                                            </span>
+                                        </Link>
+                                    </UserToolTip>
+
 
                                     <span className="text-sm text-muted-foreground">@{post.user.username}</span>
                                     <span className="text-xs text-muted-foreground"><RelativeTime createdAt={post.createdAt} /></span>
                                 </div>
                             </div>
 
-                            {user?.id === post.userId && (<DropdownMenu>
+                            {userId === post.userId && (<DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" size="icon" className="ml-auto rounded-full hover:bg-secondary/80">
                                         <MoreHorizontal className="h-5 w-5" />
@@ -151,7 +156,9 @@ const Posts = ({ posts, user }: PostProps) => {
 
                         {/* Post Content */}
                         <CardContent className="px-6 space-y-4">
-                            <p className="text-gray-800 leading-relaxed">{post.content}</p>
+                            <Linkify>
+                                <p className="leading-relaxed">{post.content}</p>
+                            </Linkify>
 
                             {post.user.avatarUrl && (
                                 <div className="relative rounded-xl overflow-hidden bg-secondary/10 hover:bg-secondary/20 transition-colors">
