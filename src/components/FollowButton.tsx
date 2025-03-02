@@ -34,6 +34,9 @@ const FollowButton = ({ loggedInUserId, user }: { loggedInUserId: string, user: 
         mutationFn: async (id: string) => await axios.post("/api/users/followers", { followingId: id }),
         onSuccess: (_, id) => {
             queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+            queryClient.invalidateQueries({ queryKey: ["post-feed", "for-you"] });
+            queryClient.invalidateQueries({ queryKey: ["post-feed", "following"] });
+
             queryClient.setQueryData(["users"], (oldData: User[] | undefined) => {
                 if (!oldData) return oldData;
                 return oldData.map((user: User) =>
@@ -51,6 +54,9 @@ const FollowButton = ({ loggedInUserId, user }: { loggedInUserId: string, user: 
         mutationFn: async (id: string) => await axios.delete("/api/users/followers", { data: { followingId: id } }),
         onSuccess: (_, id) => {
             queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+            queryClient.invalidateQueries({ queryKey: ["post-feed", "for-you"] });
+            queryClient.invalidateQueries({ queryKey: ["post-feed", "following"] });
+
             queryClient.setQueryData(["users"], (oldData: User[] | undefined) => {
                 if (!oldData) return oldData;
                 return oldData.map((user: User) =>

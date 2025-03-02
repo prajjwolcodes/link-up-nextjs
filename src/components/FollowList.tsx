@@ -6,17 +6,23 @@ import { Users } from 'lucide-react';
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import FollowButton from "./FollowButton";
+import UserToolTip from "./UserToolTip";
 
 interface User {
     id: string;
     username: string;
     displayName: string;
-    avatarUrl?: string;
-    following?: Follower[];
+    avatarUrl: string;
+    followers: Follower[];
+    _count: {
+        following: number;
+        followers: number;
+    };
 }
 
 interface Follower {
     followerId: string;
+    followingId: string;
 }
 
 const fetchUsers = async () => {
@@ -40,21 +46,26 @@ const FollowList = ({ loggedInUserId }: { loggedInUserId: string }) => {
                 {users?.map((user: User) => (
                     <div key={user.id} className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <Link href={`/user/${user.username}`}>
-                                <Avatar>
-                                    <AvatarImage className="w-12 h-12" src={user.avatarUrl || undefined} alt="display picture" />
-                                    <AvatarFallback className='bg-gradient-to-br from-purple-400 to-pink-500 text-white'>
-                                        {user.username.charAt(0).toUpperCase()}
-                                    </AvatarFallback>
-                                </Avatar>
-                            </Link>
+                            <UserToolTip user={user} loggedInUserId={loggedInUserId}>
+                                <Link href={`/user/${user.username}`}>
+                                    <Avatar>
+                                        <AvatarImage className="w-12 h-12" src={user.avatarUrl || undefined} alt="display picture" />
+                                        <AvatarFallback className='bg-gradient-to-br from-purple-400 to-pink-500 text-white'>
+                                            {user.username.charAt(0).toUpperCase()}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                </Link>
+                            </UserToolTip>
 
                             <div>
-                                <Link href={`/user/${user.username}`}>
-                                    <h3 className="font-medium text-gray-900 hover:text-blue-600 cursor-pointer">
-                                        {user.displayName}
-                                    </h3>
-                                </Link>
+                                <UserToolTip user={user} loggedInUserId={loggedInUserId}>
+                                    <Link href={`/user/${user.username}`}>
+
+                                        <h3 className="font-medium text-gray-900 hover:text-blue-600 cursor-pointer">
+                                            {user.displayName}
+                                        </h3>
+                                    </Link>
+                                </UserToolTip>
                                 <p className="text-sm text-gray-500">{user.username}</p>
                             </div>
                         </div>

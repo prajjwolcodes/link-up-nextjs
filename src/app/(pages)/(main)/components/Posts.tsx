@@ -38,7 +38,11 @@ interface PostProps {
             followers: {
                 followerId: string,
                 followingId: string,
-            }[] | null;
+            }[] | null,
+            _count: {
+                following: number,
+                followers: number
+            }
         },
         userId: string
     }[],
@@ -83,16 +87,17 @@ const Posts = ({ posts, userId }: PostProps) => {
                         {/* Post Header */}
                         <CardHeader className="flex flex-row items-center gap-4 p-6">
                             <div className="relative">
-                                <Link href={`/user/${post.user.username}`}>
-                                    <UserToolTip user={post.user} loggedInUserId={userId}>
+                                <UserToolTip user={post.user} loggedInUserId={userId}>
+
+                                    <Link href={`/user/${post.user.username}`}>
                                         <Avatar className="h-10 w-10 ring-2 ring-primary/10 hover:ring-primary/30 transition-all">
                                             <AvatarImage src={post.user.avatarUrl || undefined} alt={post.user.username} className='w-full h-full object-cover' />
                                             <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-500 text-white">
                                                 {post.user.username[0].toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
-                                    </UserToolTip>
-                                </Link>
+                                    </Link>
+                                </UserToolTip>
 
 
                             </div>

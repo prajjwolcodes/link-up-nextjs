@@ -13,7 +13,6 @@ export async function GET(req: NextRequest) {
         const limit = Number(searchParams.get("limit")) || 10;
         const skip = (page - 1) * limit;
 
-        console.log(searchParams);
 
         const posts = await db.post.findMany({
             skip,
@@ -35,6 +34,13 @@ export async function GET(req: NextRequest) {
                             select: {
                                 followerId: true,
                                 followingId: true
+                            }
+                        },
+                        _count: {
+                            select: {
+                                posts: true,
+                                followers: true,
+                                following: true
                             }
                         }
                     }

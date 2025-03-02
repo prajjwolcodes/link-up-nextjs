@@ -8,10 +8,10 @@ import FollowingFeed from './FollowingFeed'
 const page = async () => {
 
   return (
-    <div className="w-full max-w-[90rem] flex gap-10 mx-auto p-2 space-y-4">
-      <div className='flex w-full flex-col '>
+    <div className="w-full grid grid-cols-4  mx-auto p-2 space-y-4">
+      <div className='flex col-span-3 w-full flex-col  max-w-3xl mx-auto '>
         <PostSection />
-        <Tabs defaultValue="for-you" className="w-full max-w-3xl mx-auto">
+        <Tabs defaultValue="for-you" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="for-you" className="data-[state=active]:bg-gray-900 data-[state=active]:text-white">
               For You
@@ -30,7 +30,9 @@ const page = async () => {
           </TabsContent>
         </Tabs>
       </div>
-      <TrendsSidebar />
+      <div className='col-start-4 col-span-1'>
+        <TrendsSidebar />
+      </div>
     </div>
   )
 }

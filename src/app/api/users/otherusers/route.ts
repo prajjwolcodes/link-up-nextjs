@@ -20,6 +20,12 @@ export async function GET() {
                         followerId: true,
                         followingId: true
                     }
+                },
+                _count: {
+                    select: {
+                        following: true,
+                        followers: true
+                    }
                 }
             },
         })

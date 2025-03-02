@@ -13,7 +13,11 @@ interface User {
         followers: {
             followerId: string,
             followingId: string,
-        }[] | null;
+        }[] | null,
+        _count: {
+            following: number,
+            followers: number
+        }
     };
     children: React.ReactNode,
     loggedInUserId: string
@@ -34,7 +38,7 @@ const UserToolTip = ({ children, user, loggedInUserId }: User) => {
                             <div className="flex gap-3 items-center mb-4">
                                 <Avatar className="h-10 w-10 ring-2 rounded-full ring-primary/10 hover:ring-primary/30 transition-all">
                                     <AvatarImage src={user.avatarUrl || undefined} alt={user.username} className='w-full h-full rounded-full object-cover' />
-                                    <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-500 text-white">
+                                    <AvatarFallback className="bg-gradient-to-br flex justify-center items-center h-full rounded-full from-purple-400 to-pink-500 text-white">
                                         {user.username[0].toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
@@ -45,12 +49,12 @@ const UserToolTip = ({ children, user, loggedInUserId }: User) => {
                             </div>
                             <div className="flex justify-between mb-3">
                                 <div>
-                                    <span className="font-semibold text-gray-900">10</span>
-                                    <span className="text-gray-500 ml-1">Following</span>
+                                    <span className="font-semibold text-gray-900">{user._count.following}</span>
+                                    <span className="text-gray-500 ml-1">Followers</span>
                                 </div>
                                 <div>
-                                    <span className="font-semibold text-gray-900">12</span>
-                                    <span className="text-gray-500 ml-1">Followers</span>
+                                    <span className="font-semibold text-gray-900">{user._count.followers}</span>
+                                    <span className="text-gray-500 ml-1">Following</span>
                                 </div>
                             </div>
                             {user.id !== loggedInUserId && <FollowButton user={user} loggedInUserId={loggedInUserId} />}

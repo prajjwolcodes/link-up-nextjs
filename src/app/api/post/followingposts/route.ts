@@ -45,8 +45,13 @@ export async function GET(req: NextRequest) {
                                 followerId: true
                             }
                         },
-
-
+                        _count: {
+                            select: {
+                                posts: true,
+                                followers: true,
+                                following: true
+                            }
+                        }
                     }
                 }
             },
