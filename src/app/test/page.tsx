@@ -1,9 +1,14 @@
-import UserToolTip from '@/components/UserToolTip';
-import { LinkIt } from 'react-linkify-it';
+import Uploadbutton from '@/components/UploadButton'
+import UserDetailsForm from '@/components/UserDetailsForm'
+import React from 'react'
 
-export default function Linkify({ children }: { children: React.ReactNode }) {
-    const regexToMatch = /#(\w+)/g;
+const page = () => {
     return (
-        <UserToolTip />
-    );
+        <div>
+            <Uploadbutton />
+            {/* <UserDetailsForm /> */}
+        </div>
+    )
 }
+
+export default page

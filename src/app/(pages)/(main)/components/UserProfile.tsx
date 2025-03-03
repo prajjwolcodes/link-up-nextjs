@@ -8,6 +8,7 @@ import UserPosts from './UserPosts';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from "react-hot-toast";
+import UserDetailsForm from '@/components/UserDetailsForm';
 
 interface UserProps {
     username: string,
@@ -135,7 +136,7 @@ export default function UserProfile({ username, loggedInUser }: UserProps) {
                             {/* Follow Button */}
                             {loggedInUser.id === userDetails.id ? (
                                 <div className="mt-4 flex gap-2 md:mt-0">
-                                    <Button className="px-10 bg-blue-600 hover:bg-blue-700">Edit</Button>
+                                    <UserDetailsForm user={userDetails} />
                                 </div>
                             ) : (
                                 <div className="mt-4 flex gap-2 md:mt-0">

@@ -3,22 +3,10 @@ import React from 'react'
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import FollowButton from './FollowButton';
+import { UserProps } from '@/lib/types';
 
 interface User {
-    user: {
-        id: string;
-        username: string;
-        displayName: string;
-        avatarUrl: string;
-        followers: {
-            followerId: string,
-            followingId: string,
-        }[] | null,
-        _count: {
-            following: number,
-            followers: number
-        }
-    };
+    user: UserProps,
     children: React.ReactNode,
     loggedInUserId: string
 

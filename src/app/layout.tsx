@@ -4,6 +4,9 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/context/ThemeProvider";
 import { ReactQueryProvider } from "@/context/ReactQueryProvider";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { uploadRouter } from "./api/uploadthing/core";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,6 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <NextSSRPlugin routerConfig={extractRouterConfig(uploadRouter)} />
         <ReactQueryProvider>
           <Toaster />
           <ThemeProvider

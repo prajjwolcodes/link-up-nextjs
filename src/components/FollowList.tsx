@@ -7,23 +7,9 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import FollowButton from "./FollowButton";
 import UserToolTip from "./UserToolTip";
+import { UserProps } from "@/lib/types";
 
-interface User {
-    id: string;
-    username: string;
-    displayName: string;
-    avatarUrl: string;
-    followers: Follower[];
-    _count: {
-        following: number;
-        followers: number;
-    };
-}
 
-interface Follower {
-    followerId: string;
-    followingId: string;
-}
 
 const fetchUsers = async () => {
     const res = await axios.get('/api/users/otherusers');
@@ -43,7 +29,7 @@ const FollowList = ({ loggedInUserId }: { loggedInUserId: string }) => {
                 <h2 className="text-xl font-semibold text-gray-800">Who to Follow</h2>
             </div>
             <div className="space-y-4">
-                {users?.map((user: User) => (
+                {users?.map((user: UserProps) => (
                     <div key={user.id} className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <UserToolTip user={user} loggedInUserId={loggedInUserId}>

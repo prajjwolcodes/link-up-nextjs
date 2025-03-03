@@ -24,26 +24,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import Linkify from '@/context/Linkify';
 import UserToolTip from '@/components/UserToolTip';
+import { UserProps } from '@/lib/types';
 
 interface PostProps {
     posts: {
         id: string;
         content: string;
         createdAt: Date;
-        user: {
-            id: string;
-            username: string;
-            displayName: string;
-            avatarUrl: string;
-            followers: {
-                followerId: string,
-                followingId: string,
-            }[] | null,
-            _count: {
-                following: number,
-                followers: number
-            }
-        },
+        user: UserProps;
         userId: string
     }[],
     userId: string
